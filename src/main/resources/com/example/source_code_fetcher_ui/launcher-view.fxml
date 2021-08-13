@@ -12,14 +12,18 @@
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 
+    <Button text="Stop" onAction="#onStopButtonClick" fx:id="stopButton" visible="false"/>
+
     <Label fx:id="welcomeText"/>
-    <Button text="Launch" onAction="#onLaunchButtonClick"/>
+    <Button text="Launch" onAction="#onLaunchButtonClick" fx:id="launchButton"/>
 
     <Label text="Choose the number of windows" fx:id="windowsText"/>
-    <TextField fx:id="numOfWindowsTextField"/>
+    <TextField fx:id="windowsTextField"/>
 
     <Label text="Paste your URL here" fx:id="urlText"/>
     <TextField fx:id="urlTextField"/>
 
-    <Button text="Stop" onAction="#onStopButtonClick" fx:id="stopButton" visible="false"/>
+    <Label text="Choose where to save files" fx:id="filePathText"/>
+    <TextField fx:id="filePathTextField"/>
+
 </VBox>

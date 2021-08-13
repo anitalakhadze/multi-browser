@@ -1,6 +1,5 @@
 package com.example.source_code_fetcher_ui;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -22,12 +21,18 @@ public class LauncherController {
     private Label windowsText;
     @FXML
     private Label urlText;
+    @FXML
+    private Label filePathText;
 
     @FXML
-    private TextField numOfWindowsTextField;
+    private TextField windowsTextField;
     @FXML
     private TextField urlTextField;
+    @FXML
+    private TextField filePathTextField;
 
+    @FXML
+    private Button launchButton;
     @FXML
     private Button stopButton;
 
@@ -40,48 +45,58 @@ public class LauncherController {
     class MyRunnable implements Runnable {
         int numOfWindows;
         String url;
+        String filePath;
 
-        public MyRunnable(int numOfWindows, String url) {
+        public MyRunnable(int numOfWindows, String url, String filePath) {
             this.numOfWindows = numOfWindows;
             this.url = url;
+            this.filePath = filePath;
         }
 
         @Override
         public void run() {
-            openBrowser(numOfWindows, url);
+            openBrowser(numOfWindows, url, filePath);
         }
     }
 
     @FXML
-    protected void onLaunchButtonClick(ActionEvent event) {
-        int numOfWindows = Integer.parseInt(numOfWindowsTextField.getText());
+    protected void onLaunchButtonClick() {
+        int numOfWindows = Integer.parseInt(windowsTextField.getText());
         String url = urlTextField.getText();
+        String filePath = filePathTextField.getText();
+        prepareShutDownState();
+        openBrowserInASeparateThread(numOfWindows, url, filePath);
+    }
 
-        Button source = (Button) event.getSource();
-        source.setVisible(false);
-        numOfWindowsTextField.setVisible(false);
+    private void prepareShutDownState() {
+        launchButton.setVisible(false);
+
+        windowsTextField.setVisible(false);
         windowsText.setVisible(false);
+
         urlTextField.setVisible(false);
         urlText.setVisible(false);
 
-        welcomeText.setText("Press 'stop' button to terminate the program!");
-        stopButton.setVisible(true);
+        filePathTextField.setVisible(false);
+        filePathText.setVisible(false);
 
-        openBrowserInASeparateThread(numOfWindows, url);
+        welcomeText.setText("Press 'stop' button to terminate the program!");
+
+        stopButton.setVisible(true);
     }
 
-    private void openBrowserInASeparateThread(int numOfWindows, String url) {
-        MyRunnable myRunnable = new MyRunnable(numOfWindows, url);
+    private void openBrowserInASeparateThread(int numOfWindows, String url, String filePath) {
+        MyRunnable myRunnable = new MyRunnable(numOfWindows, url, filePath);
         Thread myThread = new Thread(myRunnable);
         myThread.setDaemon(true);
         myThread.start();
     }
 
-    private void openBrowser(int numOfWindows, String url) {
+    private void openBrowser(int numOfWindows, String url, String filePath) {
         System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver");
 
         List<CustomWebDriver> customWebDrivers = new ArrayList<>();
-        populateWebDriversCollection(customWebDrivers, numOfWindows, url);
+        populateWebDriversCollection(customWebDrivers, numOfWindows, url, filePath);
 
         customWebDrivers.parallelStream().forEach(customWebDriver -> {
             WebDriver webDriver = customWebDriver.getWebDriver();
@@ -106,10 +121,13 @@ public class LauncherController {
         });
     }
 
-    private void populateWebDriversCollection(List<CustomWebDriver> customWebDrivers, int numOfWindows, String url) {
+    private void populateWebDriversCollection(List<CustomWebDriver> customWebDrivers,
+                                              int numOfWindows,
+                                              String url,
+                                              String filePath) {
         for (int i = 0; i < numOfWindows; i++) {
             WebDriver webDriver = new FirefoxDriver();
-            String fileName = String.format("/home/anita/folder/folder/file%s.txt", i + 1);
+            String fileName = filePath.concat(String.format("/file%s.txt", i + 1));
             customWebDrivers.add(new CustomWebDriver(webDriver, url, fileName));
         }
     }

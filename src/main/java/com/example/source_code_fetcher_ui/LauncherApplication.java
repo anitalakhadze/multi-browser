@@ -11,7 +11,7 @@ public class LauncherApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(LauncherApplication.class.getResource("launcher-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 350, 350);
+        Scene scene = new Scene(fxmlLoader.load(), 500, 500);
         stage.setTitle("HTML Source Code Fetcher");
         stage.setScene(scene);
         stage.show();
